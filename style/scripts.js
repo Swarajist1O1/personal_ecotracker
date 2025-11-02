@@ -71,12 +71,10 @@ function checkScreenWidth() {
   var screenWidth = window.innerWidth || window.parent.document.documentElement.clientWidth || window.parent.document.body.clientWidth;
 
   if (screenWidth <= 600) {
-            window.parent.document.getElementById('project-copyright').style.display = 'none';
             window.parent.document.getElementById('team-members').style.marginRight = "0px";
 			Array.from(window.parent.document.querySelectorAll('button[data-baseweb="tab"] > div > p')).forEach(button => button.style.fontSize = '10px');
   } else {
             window.parent.document.getElementById('team-members').style.marginRight = "20px";
-            window.parent.document.getElementById('project-copyright').style.display = 'block';
   }
 }
 
