@@ -157,4 +157,14 @@ body {
 			background-repeat: no-repeat;
 			display: block;
 		}
+    div[data-testid="stMainBlock"] {
+    background: rgba(0,0,0,0.5);
+    }
+    div[role="tabpanel"] {
+    background: rgba(0,0,0,0.5);
+    color: white;
+    min-height: 600px;
+    padding: 32px 24px;
+    font-size: 18px;
+}
 
