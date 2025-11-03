@@ -9,5 +9,3 @@ Welcome to Personal Ecotracker! This tool helps you understand and track your pe
 - **Healthier Living:** Make decisions that benefit both your health and the environment.
 - **Sustainable Choices:** Get personalized suggestions for eco-friendly habits.
 - **Personal Responsibility:** Take charge of your environmental footprint and inspire others to do the same.
-
-Ready to begin? Use the tabs above to enter your information and see your results!
