@@ -130,11 +130,13 @@ body {
 
     div[id^=tabs-bui][id$=-tabpanel-4] > div > div > div > div > div > div > div> div > div > div > button[kind = "secondary"] 
      {
-     background: #6fa861;
+     background: rgba(0, 123, 45, 0.9) !important;
+     border: 2px solid rgba(255, 255, 255, 0.3);
     }
     div[id^=tabs-bui][id$=-tabpanel-4] > div > div > div > div > div > div > div> div > div > div > button[kind = "secondary"] > div > p  
      {
-     color: rgb(255, 255, 255);
+     color: rgb(255, 255, 255) !important;
+     font-weight: bold;
     }
 
     div[data-testid = "stMarkdownContainer"] > p > a {color: rgb(255, 255, 255); text-decoration: none; border: 0px; font-size: 18px; }
@@ -181,5 +183,37 @@ body {
     
     div[id^=tabs-bui][id$=-tabpanel-0] > div > div > div > div > div[data-testid = "column"] > div > div> div > div > div > button[kind = "secondary"] > div > p {
         color: white !important;
+    }
+/* Back to Home button in results section specific styling */
+    div[id^=tabs-bui][id$=-tabpanel-2] > div > div > div > div > div > div > div > div > div > div[data-testid = "column"] > div > div> div > div > div > button[kind = "secondary"] {
+        background-color: rgba(0, 123, 45, 0.9) !important;
+        color: white !important;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    div[id^=tabs-bui][id$=-tabpanel-2] > div > div > div > div > div > div > div > div > div > div[data-testid = "column"] > div > div> div > div > div > button[kind = "secondary"]:hover {
+        background-color: rgba(0, 150, 60, 0.9) !important;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    div[id^=tabs-bui][id$=-tabpanel-2] > div > div > div > div > div > div > div > div > div > div[data-testid = "column"] > div > div> div > div > div > button[kind = "secondary"] > div > p {
+        color: white !important;
+        font-weight: bold;
+    }
+/* General secondary button styling for better visibility */
+    button[kind = "secondary"] {
+        background-color: rgba(0, 123, 45, 0.9) !important;
+        color: white !important;
+        border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    button[kind = "secondary"]:hover {
+        background-color: rgba(0, 150, 60, 0.9) !important;
+        border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    button[kind = "secondary"] > div > p {
+        color: white !important;
+        font-weight: bold !important;
     }
 
