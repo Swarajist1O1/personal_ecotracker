@@ -19,14 +19,13 @@ def get_base64(bin_file):
     return base64.b64encode(data).decode()
 
 background = get_base64("./media/Senate.jpeg")
-icon2 = get_base64("./media/icon2.png")
-icon3 = get_base64("./media/icon3.png")
 
 with open("./style/style.css", "r") as style:
     css = style.read()
     css = css.replace("{background}", background)
-    css = css.replace("{icon2}", icon2)
-    css = css.replace("{icon3}", icon3)
+    # Remove icon references since the files don't exist
+    css = css.replace("{icon2}", "")
+    css = css.replace("{icon3}", "")
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 def script():
@@ -41,11 +40,17 @@ main, comps , result = middle.tabs([" ", " ", " "])
 with open("./style/main.md", "r", encoding="utf-8") as main_page:
     main.markdown(f"""{main_page.read()}""")
 
-_,but,_ = main.columns([1,2,1])
-if but.button("Calculate Your Carbon Footprint!", type="primary"):
+_,but,_ = main.columns([1,1,1])
+if but.button("Start Your Eco Journey!", type="primary"):
     click_element('tab-1')
 
-tab1, tab2, tab3, tab4, tab5 = comps.tabs(["👴 Personal","🚗 Travel","🗑️ Waste","⚡ Energy","💸 Consumption"])
+tab1, tab2, tab3, tab4, tab5 = comps.tabs([
+    "👤 Identity",
+    "🚀 Transport",
+    "🗑️ Waste",
+    "🔋 Energy",
+    "🛒 Lifestyle"
+])
 tab_result,_ = result.tabs([" "," "])
 
 def component():
@@ -127,45 +132,76 @@ def component():
     return pd.DataFrame(data, index=[0])
 
 df = component()
-data = input_preprocessing(df)
 
-sample_df = pd.DataFrame(data=sample,index=[0])
-sample_df[sample_df.columns] = 0
-sample_df[data.columns] = data
+# Initialize session state for calculation
+if 'calculation_done' not in st.session_state:
+    st.session_state.calculation_done = False
 
-ss = pickle.load(open("./models/scale.sav","rb"))
-model = pickle.load(open("./models/model.sav","rb"))
-prediction = round(np.exp(model.predict(ss.transform(sample_df))[0]))
+_,calc_col,_ = tab5.columns([2,1,2])
+if calc_col.button("Calculate", type="primary"):
+    st.session_state.calculation_done = True
+    
+# Only run calculation and show results if button was pressed
+if st.session_state.calculation_done:
+    data = input_preprocessing(df)
+    sample_df = pd.DataFrame(data=sample,index=[0])
+    sample_df[sample_df.columns] = 0
+    sample_df[data.columns] = data
 
-column1,column2 = tab1.columns(2)
-_,resultbutton,_ = tab5.columns([1,1,1])
-if resultbutton.button(" ", type = "secondary"):
-    tab_result.image(chart(model,ss, sample_df,prediction), use_column_width="auto")
+    ss = pickle.load(open("./models/scale.sav","rb"))
+    model = pickle.load(open("./models/model.sav","rb"))
+    prediction = round(np.exp(model.predict(ss.transform(sample_df))[0]))
+
+    tree_count = round(prediction / 411.4)
+    tab_result.image(chart(model, ss, sample_df, prediction), use_container_width=True)
+    tab_result.markdown(f"You owe nature <b>{tree_count}</b> tree{'s' if tree_count > 1 else ''} monthly.",  unsafe_allow_html=True)
+    
+    # Add professional suggestions box
+    suggestions_html = '''
+    <div style="background: linear-gradient(135deg, #2E7D32, #43A047); border: 2px solid #1B5E20; border-radius: 15px; padding: 20px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3); color: white; font-family: Arial, sans-serif;">
+        <h3 style="color: #E8F5E8; margin-top: 0; margin-bottom: 15px; text-align: center; font-size: 24px; font-weight: bold;">🌱 Ways to Reduce Your Carbon Footprint</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+            <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px;">
+                <strong>🚗 Transportation:</strong><br>
+                • Use public transport or bike<br>
+                • Walk for short distances<br>
+                • Consider electric vehicles
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px;">
+                <strong>⚡ Energy:</strong><br>
+                • Switch to LED bulbs<br>
+                • Use energy-efficient appliances<br>
+                • Unplug devices when not in use
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px;">
+                <strong>🗑️ Waste:</strong><br>
+                • Recycle paper, plastic, glass<br>
+                • Reduce single-use items<br>
+                • Compost organic waste
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px;">
+                <strong>🥗 Diet:</strong><br>
+                • Eat more plant-based meals<br>
+                • Buy local and seasonal food<br>
+                • Reduce food waste
+            </div>
+        </div>
+        <p style="text-align: center; margin: 15px 0 5px 0; font-style: italic; color: #E8F5E8;">Small changes can make a big difference! 🌍</p>
+    </div>
+    '''
+    tab_result.markdown(suggestions_html, unsafe_allow_html=True)
     click_element('tab-2')
 
-pop_button = """<button id = "button-17" class="button-17" role="button"> ❔ Did You Know</button>"""
-_,home,_ = comps.columns([1,2,1])
-_,col2,_ = comps.columns([1,10,1])
-col2.markdown(pop_button, unsafe_allow_html=True)
-pop = """
-<div id="popup" class="DidYouKnow_root">
-<p class="DidYouKnow_title TextNew" style="font-size: 20px;"> ❔ Did you know</p>
-    <p id="popupText" class="DidYouKnow_content TextNew"><span>
-    Each year, human activities release over 40 billion metric tons of carbon dioxide into the atmosphere, contributing to climate change.
-    </span></p>
-</div>
-"""
-col2.markdown(pop, unsafe_allow_html=True)
+_,home,_ = comps.columns([3,1,3])
 
-if home.button("🏡"):
+if home.button("Home", key="home_button"):
+    st.session_state.calculation_done = False  # Reset calculation state when going home
     click_element('tab-0')
-_,resultmid,_ = result.columns([1,2,1])
+_,resultmid,_ = result.columns([3,1,3])
 
-tree_count = round(prediction / 411.4)
-tab_result.markdown(f"You owe nature <b>{tree_count}</b> tree{'s' if tree_count > 1 else ''} monthly.",  unsafe_allow_html=True)
-
-if resultmid.button("  ", type="secondary"):
-    click_element('tab-1')
+if resultmid.button("Back to Home", type="secondary"):
+    st.session_state.calculation_done = False
+    click_element('tab-0')
 
 with open("./style/footer.html", "r", encoding="utf-8") as footer:
     footer_html = f"""{footer.read()}"""

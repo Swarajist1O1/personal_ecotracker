@@ -113,7 +113,7 @@ def hesapla(model,ss, sample_df):
                       ]]
     copy_df[list(set(copy_df.columns) - set(diets.columns))] = 0
     diet = np.exp(model.predict(ss.transform(copy_df)))
-    hesap = {"Travel": travel[0], "Energy": energy[0], "Waste": waste[0], "Diet": diet[0]}
+    hesap = {"Transport": travel[0], "Energy": energy[0], "Waste": waste[0], "Lifestyle": diet[0]}
 
     return hesap
 
@@ -127,8 +127,8 @@ def chart(model, scaler,sample_df, prediction):
                              labels=p.keys(),
                              explode=[0.03] * 4,
                              labeldistance=0.75,
-                             colors=["#29ad9f", "#1dc8b8", "#99d9d9", "#b4e3dd" ], shadow=True,
-                             textprops={'fontsize': 20, 'weight': 'bold', "color": "#000000ad"})
+                             colors=["#2E7D32", "#43A047", "#66BB6A", "#81C784"], shadow=True,
+                             textprops={'fontsize': 20, 'weight': 'bold', "color": "#FFFFFF"})
     for text in texts:
         text.set_horizontalalignment('center')
 
@@ -137,20 +137,42 @@ def chart(model, scaler,sample_df, prediction):
 
     background = Image.open("./media/default.png")
     draw = ImageDraw.Draw(background)
-    font1 = ImageFont.truetype(font="./style/ArchivoBlack-Regular.ttf", size=50)
-    font = ImageFont.truetype(font="./style/arialuni.ttf", size=50)
-    draw.text(xy=(320, 50), text=f"  How big is your\nCarbon Footprint?", font=font1, fill="#039e8e", stroke_width=1, stroke_fill="#039e8e")
-    draw.text(xy=(370, 250), text=f"Monthly Emission \n\n   {prediction:.0f} kgCO₂e", font=font, fill="#039e8e", stroke_width=1, stroke_fill="#039e8e")
+    # Use moderate font sizes with white color
+    try:
+        font1 = ImageFont.truetype("arial.ttf", size=60)  # Moderate size for title
+    except:
+        try:
+            font1 = ImageFont.truetype("helvetica.ttf", size=60)
+        except:
+            try:
+                font1 = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", size=60)  # Mac fallback
+            except:
+                try:
+                    font1 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", size=60)  # Linux fallback
+                except:
+                    font1 = ImageFont.load_default()
+    try:
+        font = ImageFont.truetype("arial.ttf", size=50)   # Moderate size for emissions text
+    except:
+        try:
+            font = ImageFont.truetype("helvetica.ttf", size=50)
+        except:
+            try:
+                font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", size=50)  # Mac fallback
+            except:
+                try:
+                    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", size=50)  # Linux fallback
+                except:
+                    font = ImageFont.load_default()
+    
+    # Use white text with black outline for good contrast
+    draw.text(xy=(280, 40), text=f"How big is your\nCarbon Footprint?", font=font1, fill="#FFFFFF", stroke_width=2, stroke_fill="#000000")
+    draw.text(xy=(320, 230), text=f"Monthly Emission\n{prediction:.0f} kgCO₂e", font=font, fill="#FFFFFF", stroke_width=2, stroke_fill="#000000")
     data_back = io.BytesIO()
     background.save(data_back, "PNG")
     background = Image.open(data_back).convert('RGBA')
     piechart = Image.open(data)
-    ayak = Image.open("./media/ayak.png").resize((370, 370))
-    bg_width, bg_height = piechart.size
-    ov_width, ov_height = ayak.size
-    x = (bg_width - ov_width) // 2
-    y = (bg_height - ov_height) // 2
-    piechart.paste(ayak, (x, y), ayak.convert('RGBA'))
+    # Remove the footprint image overlay - just use the pie chart directly
     background.paste(piechart, (40, 200), piechart.convert('RGBA'))
     data2 = io.BytesIO()
     background.save(data2, "PNG")
